@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../services/database_helper.dart';
+import '../l10n/app_localizations.dart';
 import 'category_notes_screen.dart';
 import 'note_detail_screen.dart';
 import 'fake_error_screen.dart'; // Updated import
@@ -140,8 +141,9 @@ class _MainNotesScreenState extends State<MainNotesScreen>
     } catch (e) {
       print("Error performing search: $e");
       if (mounted) {
+        final l10n = AppLocalizations.of(context)!;
         ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text('Search error: $e')));
+            .showSnackBar(SnackBar(content: Text('${l10n.errorLabel}: $e')));
         setState(() => _isLoadingSearch = false);
       }
     }
@@ -248,7 +250,7 @@ class _MainNotesScreenState extends State<MainNotesScreen>
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'Search Filters',
+                  AppLocalizations.of(context)!.searchFilters,
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
                 IconButton(
@@ -270,7 +272,7 @@ class _MainNotesScreenState extends State<MainNotesScreen>
                     label: Text(
                       _startDate != null && _endDate != null
                           ? '${_startDate!.toString().split(' ')[0]} - ${_endDate!.toString().split(' ')[0]}'
-                          : 'Select Date Range',
+                          : AppLocalizations.of(context)!.selectDateRange,
                     ),
                     onPressed: _selectDateRange,
                   ),
@@ -293,14 +295,14 @@ class _MainNotesScreenState extends State<MainNotesScreen>
             const SizedBox(height: 16),
             DropdownButtonFormField<String>(
               value: _selectedCategoryId,
-              decoration: const InputDecoration(
-                labelText: 'Filter by Category',
-                border: OutlineInputBorder(),
+              decoration: InputDecoration(
+                labelText: AppLocalizations.of(context)!.filterByCategory,
+                border: const OutlineInputBorder(),
               ),
               items: [
-                const DropdownMenuItem<String>(
+                DropdownMenuItem<String>(
                   value: null,
-                  child: Text('All Categories'),
+                  child: Text(AppLocalizations.of(context)!.allCategories),
                 ),
                 ..._entries.map((entry) {
                   return DropdownMenuItem<String>(
@@ -324,7 +326,7 @@ class _MainNotesScreenState extends State<MainNotesScreen>
               children: [
                 TextButton.icon(
                   icon: const Icon(Icons.clear_all),
-                  label: const Text('Clear All Filters'),
+                  label: Text(AppLocalizations.of(context)!.clearAllFilters),
                   onPressed: _clearFilters,
                 ),
               ],
@@ -338,22 +340,23 @@ class _MainNotesScreenState extends State<MainNotesScreen>
   Future<void> _addEntry() async {
     final entryNameController = TextEditingController();
     final formKey = GlobalKey<FormState>();
+    final l10n = AppLocalizations.of(context)!;
 
     final result = await showDialog<String>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Create New Entry'),
+        title: Text(l10n.createNewEntry),
         content: Form(
           key: formKey,
           child: TextFormField(
             controller: entryNameController,
-            decoration: const InputDecoration(
-              labelText: 'Entry Name',
-              hintText: 'Enter a name for your entry',
+            decoration: InputDecoration(
+              labelText: l10n.entryNameLabel,
+              hintText: l10n.enterEntryName,
             ),
             validator: (value) {
               if (value == null || value.trim().isEmpty) {
-                return 'Please enter a name';
+                return l10n.pleaseEnterName;
               }
               return null;
             },
@@ -363,7 +366,7 @@ class _MainNotesScreenState extends State<MainNotesScreen>
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+            child: Text(l10n.cancel),
           ),
           TextButton(
             onPressed: () {
@@ -371,7 +374,7 @@ class _MainNotesScreenState extends State<MainNotesScreen>
                 Navigator.pop(context, entryNameController.text.trim());
               }
             },
-            child: const Text('Create'),
+            child: Text(l10n.create),
           ),
         ],
       ),
@@ -384,7 +387,7 @@ class _MainNotesScreenState extends State<MainNotesScreen>
       } catch (e) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Error creating entry: $e')),
+            SnackBar(content: Text(l10n.errorCreatingEntry(e.toString()))),
           );
         }
       }
@@ -392,20 +395,21 @@ class _MainNotesScreenState extends State<MainNotesScreen>
   }
 
   Future<void> _deleteEntry(Map<String, dynamic> entry) async {
+    final l10n = AppLocalizations.of(context)!;
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Delete Entry'),
+        title: Text(l10n.deleteEntry),
         content: Text(
-            'Are you sure you want to delete "${entry['decrypted_name']}"? This will also delete all notes in this entry.'),
+            l10n.deleteEntryConfirmation(entry['decrypted_name'])),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
+            child: Text(l10n.cancel),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('Delete'),
+            child: Text(l10n.delete),
           ),
         ],
       ),
@@ -418,7 +422,7 @@ class _MainNotesScreenState extends State<MainNotesScreen>
       } catch (e) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Error deleting entry: $e')),
+            SnackBar(content: Text(l10n.errorDeletingEntry(e.toString()))),
           );
         }
       }
@@ -455,7 +459,7 @@ class _MainNotesScreenState extends State<MainNotesScreen>
                           _handleUserActivity();
                         },
                       )
-                    : const Text('Native Categories'),
+                    : Text(AppLocalizations.of(context)!.nativeCategories),
               ),
               if (_remainingSeconds <= _showTimerThreshold) ...[
                 const SizedBox(width: 8),
@@ -480,7 +484,7 @@ class _MainNotesScreenState extends State<MainNotesScreen>
           actions: [
             IconButton(
               icon: const Icon(Icons.palette_outlined),
-              tooltip: 'Theme Settings',
+              tooltip: AppLocalizations.of(context)!.themeSettings,
               onPressed: () {
                 _handleUserActivity();
                 showDialog(
@@ -492,7 +496,7 @@ class _MainNotesScreenState extends State<MainNotesScreen>
             IconButton(
               icon: Icon(_isGridView ? Icons.view_list : Icons.grid_view),
               tooltip:
-                  _isGridView ? 'Switch to List View' : 'Switch to Grid View',
+                  _isGridView ? AppLocalizations.of(context)!.switchToListView : AppLocalizations.of(context)!.switchToGridView,
               onPressed: () {
                 _handleUserActivity();
                 setState(() {
@@ -502,7 +506,7 @@ class _MainNotesScreenState extends State<MainNotesScreen>
             ),
             IconButton(
               icon: const Icon(Icons.home),
-              tooltip: 'Return to Welcome Screen',
+              tooltip: AppLocalizations.of(context)!.returnToWelcomeScreen,
               onPressed: () {
                 _handleUserActivity();
                 Navigator.pushAndRemoveUntil(
@@ -598,7 +602,7 @@ class _MainNotesScreenState extends State<MainNotesScreen>
                                               children: [
                                                 Text(
                                                   result['entry_name'] ??
-                                                      'Unnamed Category',
+                                                      AppLocalizations.of(context)!.unnamedCategory,
                                                   style: const TextStyle(
                                                     fontWeight: FontWeight.bold,
                                                     fontSize: 16,
@@ -634,7 +638,7 @@ class _MainNotesScreenState extends State<MainNotesScreen>
                                                     } else {
                                                       createdAt = 0;
                                                     }
-                                                    return 'Created: ${DateTime.fromMillisecondsSinceEpoch(createdAt * 1000).toString().split('.')[0]}';
+                                                    return '${AppLocalizations.of(context)!.createdLabel}${DateTime.fromMillisecondsSinceEpoch(createdAt * 1000).toString().split('.')[0]}';
                                                   })(),
                                                   style: Theme.of(context)
                                                       .textTheme
@@ -659,7 +663,7 @@ class _MainNotesScreenState extends State<MainNotesScreen>
                                         child: ListTile(
                                           title: Text(
                                             result['entry_name'] ??
-                                                'Unnamed Category',
+                                                AppLocalizations.of(context)!.unnamedCategory,
                                             style: const TextStyle(
                                                 fontWeight: FontWeight.bold),
                                           ),
@@ -690,7 +694,7 @@ class _MainNotesScreenState extends State<MainNotesScreen>
                                                   } else {
                                                     createdAt = 0;
                                                   }
-                                                  return 'Created: ${DateTime.fromMillisecondsSinceEpoch(createdAt * 1000).toString().split('.')[0]}';
+                                                  return '${AppLocalizations.of(context)!.createdLabel}${DateTime.fromMillisecondsSinceEpoch(createdAt * 1000).toString().split('.')[0]}';
                                                 })(),
                                                 style: Theme.of(context)
                                                     .textTheme
@@ -732,12 +736,12 @@ class _MainNotesScreenState extends State<MainNotesScreen>
                                 color: Theme.of(context).colorScheme.primary),
                             const SizedBox(height: 16),
                             Text(
-                              'No entries yet',
+                              AppLocalizations.of(context)!.noEntriesYet,
                               style: Theme.of(context).textTheme.headlineSmall,
                             ),
                             const SizedBox(height: 8),
                             Text(
-                              'Tap the + button to create your first entry',
+                              AppLocalizations.of(context)!.tapPlusButtonToCreate,
                               style: Theme.of(context)
                                   .textTheme
                                   .bodyLarge
@@ -753,7 +757,7 @@ class _MainNotesScreenState extends State<MainNotesScreen>
                                 _addEntry();
                               },
                               icon: const Icon(Icons.add),
-                              label: const Text('Create First Entry'),
+                              label: Text(AppLocalizations.of(context)!.createFirstEntry),
                             ),
                           ],
                         ),
@@ -802,7 +806,7 @@ class _MainNotesScreenState extends State<MainNotesScreen>
                                         ),
                                         const SizedBox(height: 8),
                                         Text(
-                                          entry['decrypted_name'] ?? 'Unnamed',
+                                          entry['decrypted_name'] ?? AppLocalizations.of(context)!.unnamed,
                                           style: const TextStyle(
                                             fontWeight: FontWeight.bold,
                                             fontSize: 16,
@@ -835,7 +839,7 @@ class _MainNotesScreenState extends State<MainNotesScreen>
                                     ),
                                   ),
                                   subtitle: Text(
-                                    'Last modified: ${DateTime.fromMillisecondsSinceEpoch(entry['last_modified'] * 1000).toString().substring(0, 16)}',
+                                    '${AppLocalizations.of(context)!.lastModifiedLabel}${DateTime.fromMillisecondsSinceEpoch(entry['last_modified'] * 1000).toString().substring(0, 16)}',
                                     style:
                                         Theme.of(context).textTheme.bodySmall,
                                   ),
@@ -846,7 +850,7 @@ class _MainNotesScreenState extends State<MainNotesScreen>
                                       _handleUserActivity();
                                       _deleteEntry(entry);
                                     },
-                                    tooltip: 'Delete Entry',
+                                    tooltip: AppLocalizations.of(context)!.deleteEntry,
                                   ),
                                   onTap: () {
                                     _handleUserActivity();

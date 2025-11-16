@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../services/database_helper.dart';
+import '../l10n/app_localizations.dart';
 import 'add_note_screen.dart';
 import 'note_detail_screen.dart';
 
@@ -41,8 +42,9 @@ class _NoteListScreenState extends State<NoteListScreen> {
       });
     } catch (e) {
       if (mounted) {
+        final l10n = AppLocalizations.of(context)!;
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error loading notes: $e')),
+          SnackBar(content: Text(l10n.errorLoadingNotes(e.toString()))),
         );
       }
       setState(() => _isLoading = false);
@@ -62,6 +64,7 @@ class _NoteListScreenState extends State<NoteListScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.categoryName),
@@ -79,9 +82,9 @@ class _NoteListScreenState extends State<NoteListScreen> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Text(
-                        'No notes yet',
-                        style: TextStyle(fontSize: 18),
+                      Text(
+                        l10n.noNotesYet,
+                        style: const TextStyle(fontSize: 18),
                       ),
                       const SizedBox(height: 16),
                       ElevatedButton.icon(
@@ -100,7 +103,7 @@ class _NoteListScreenState extends State<NoteListScreen> {
                           }
                         },
                         icon: const Icon(Icons.add),
-                        label: const Text('Add Note'),
+                        label: Text(l10n.addNote),
                       ),
                     ],
                   ),
@@ -128,7 +131,7 @@ class _NoteListScreenState extends State<NoteListScreen> {
                           color: titleColor,
                         ),
                         title: Text(
-                          note[DatabaseHelper.colNoteTitle] ?? 'Untitled',
+                          note[DatabaseHelper.colNoteTitle] ?? l10n.untitled,
                           style: TextStyle(
                             color: titleColor,
                             fontWeight: FontWeight.bold,
@@ -136,7 +139,7 @@ class _NoteListScreenState extends State<NoteListScreen> {
                         ),
                         subtitle: Text(
                           note['is_individually_encrypted'] == true
-                              ? '[Encrypted Note]'
+                              ? l10n.encryptedNoteLabel
                               : note[DatabaseHelper.colNoteContent],
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,

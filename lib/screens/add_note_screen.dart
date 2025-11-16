@@ -59,9 +59,10 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
     } catch (e) {
       print("Error loading categories in AddNoteScreen: $e");
       if (mounted) {
+        final l10n = AppLocalizations.of(context)!;
         setState(() => _isLoadingCategories = false);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error loading categories: $e')),
+          SnackBar(content: Text(l10n.errorLoadingCategories(e.toString()))),
         );
       }
     }
@@ -69,6 +70,7 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
 
   Future<void> _pickColor(BuildContext context,
       {required bool forBackground}) async {
+    final l10n = AppLocalizations.of(context)!;
     Color pickerColor =
         forBackground ? _currentNoteBackgroundColor : _currentTitleColor;
     Color newColorHolder = pickerColor;
@@ -77,7 +79,7 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
       context: context,
       builder: (context) => AlertDialog(
         title: Text(
-            forBackground ? 'Pick Note Background Color' : 'Pick Title Color'),
+            forBackground ? l10n.pickNoteBackgroundColor : l10n.pickTitleColor),
         content: SingleChildScrollView(
           child: picker.ColorPicker(
             pickerColor: pickerColor,
@@ -93,11 +95,11 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
         ),
         actions: <Widget>[
           TextButton(
-            child: const Text('Cancel'),
+            child: Text(l10n.cancel),
             onPressed: () => Navigator.of(context).pop(),
           ),
           ElevatedButton(
-            child: const Text('Select'),
+            child: Text(l10n.select),
             onPressed: () {
               setState(() {
                 if (forBackground) {
@@ -115,10 +117,11 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
   }
 
   Future<void> _showEncryptionDialog() async {
+    final l10n = AppLocalizations.of(context)!;
     if (_contentController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-            content: Text('Please enter some content before encrypting')),
+        SnackBar(
+            content: Text(l10n.pleaseEnterContentBeforeEncrypting)),
       );
       return;
     }
@@ -131,7 +134,7 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Encrypt Note'),
+          title: Text(l10n.encryptNote),
           content: Form(
             key: formKey,
             child: Column(
@@ -139,11 +142,11 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
               children: [
                 TextFormField(
                   controller: passwordController,
-                  decoration: const InputDecoration(labelText: 'Password'),
+                  decoration: InputDecoration(labelText: l10n.passwordLabel),
                   obscureText: true,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Please enter a password';
+                      return l10n.pleaseEnterPassword;
                     }
                     return null;
                   },
@@ -152,11 +155,11 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
                 TextFormField(
                   controller: confirmPasswordController,
                   decoration:
-                      const InputDecoration(labelText: 'Confirm Password'),
+                      InputDecoration(labelText: l10n.confirmPasswordLabel),
                   obscureText: true,
                   validator: (value) {
                     if (value != passwordController.text) {
-                      return 'Passwords do not match';
+                      return l10n.passwordsDoNotMatch;
                     }
                     return null;
                   },
@@ -166,11 +169,11 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
           ),
           actions: <Widget>[
             TextButton(
-              child: const Text('Cancel'),
+              child: Text(l10n.cancel),
               onPressed: () => Navigator.of(context).pop(false),
             ),
             TextButton(
-              child: const Text('Encrypt'),
+              child: Text(l10n.encrypt),
               onPressed: () {
                 if (formKey.currentState!.validate()) {
                   Navigator.of(context).pop(true);
@@ -205,14 +208,16 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
         });
 
         if (mounted) {
+          final l10n = AppLocalizations.of(context)!;
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Note encrypted successfully!')),
+            SnackBar(content: Text(l10n.noteEncryptedSuccessfully)),
           );
         }
       } catch (e) {
         if (mounted) {
+          final l10n = AppLocalizations.of(context)!;
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Error: ${e.toString()}')),
+            SnackBar(content: Text(l10n.encryptionError(e.toString()))),
           );
         }
       }
@@ -293,16 +298,17 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
   }
 
   Future<void> _saveNote() async {
+    final l10n = AppLocalizations.of(context)!;
     if (_titleController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please enter a title')),
+        SnackBar(content: Text(l10n.pleaseEnterTitle)),
       );
       return;
     }
 
     if (_selectedCategoryId == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please select a category')),
+        SnackBar(content: Text(l10n.pleaseSelectCategory)),
       );
       return;
     }
@@ -332,7 +338,7 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error saving note: $e')),
+          SnackBar(content: Text(l10n.errorSavingNote(e.toString()))),
         );
       }
     }
