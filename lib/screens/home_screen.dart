@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../l10n/app_localizations.dart';
 import 'category_notes_screen.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -6,9 +7,10 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('My Notes'),
+        title: Text(l10n.myNotes),
       ),
       body: Center(
         child: Column(
@@ -21,17 +23,17 @@ class HomeScreen extends StatelessWidget {
             ),
             const SizedBox(height: 24),
             Text(
-              'Welcome to My Notes',
+              l10n.welcomeToMyNotes,
               style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                     color: Colors.blue,
                     fontWeight: FontWeight.bold,
                   ),
             ),
             const SizedBox(height: 16),
-            const Text(
-              'Your personal note-taking application',
+            Text(
+              l10n.yourPersonalNoteApplication,
               textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 16),
+              style: const TextStyle(fontSize: 16),
             ),
             const SizedBox(height: 32),
             ElevatedButton.icon(
@@ -48,7 +50,7 @@ class HomeScreen extends StatelessWidget {
                 );
               },
               icon: const Icon(Icons.notes),
-              label: const Text('View Notes'),
+              label: Text(l10n.viewNotes),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.blue,
                 foregroundColor: Colors.white,

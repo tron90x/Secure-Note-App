@@ -1,41 +1,43 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../services/theme_service.dart';
+import '../l10n/app_localizations.dart';
 
 class ThemeSettingsDialog extends StatelessWidget {
   const ThemeSettingsDialog({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final themeService = Provider.of<ThemeService>(context);
 
     return AlertDialog(
-      title: const Text('Theme Settings'),
+      title: Text(l10n.themeSettings),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Theme Mode',
+            l10n.themeMode,
             style: Theme.of(context).textTheme.titleMedium,
           ),
           const SizedBox(height: 8),
           SegmentedButton<ThemeMode>(
-            segments: const [
+            segments: [
               ButtonSegment<ThemeMode>(
                 value: ThemeMode.system,
-                label: Text('System'),
-                icon: Icon(Icons.brightness_auto),
+                label: Text(l10n.systemTheme),
+                icon: const Icon(Icons.brightness_auto),
               ),
               ButtonSegment<ThemeMode>(
                 value: ThemeMode.light,
-                label: Text('Light'),
-                icon: Icon(Icons.light_mode),
+                label: Text(l10n.lightTheme),
+                icon: const Icon(Icons.light_mode),
               ),
               ButtonSegment<ThemeMode>(
                 value: ThemeMode.dark,
-                label: Text('Dark'),
-                icon: Icon(Icons.dark_mode),
+                label: Text(l10n.darkTheme),
+                icon: const Icon(Icons.dark_mode),
               ),
             ],
             selected: {themeService.themeMode},
@@ -45,13 +47,13 @@ class ThemeSettingsDialog extends StatelessWidget {
           ),
           const SizedBox(height: 24),
           Text(
-            'Automatic Dark Mode',
+            l10n.automaticDarkMode,
             style: Theme.of(context).textTheme.titleMedium,
           ),
           const SizedBox(height: 8),
           SwitchListTile(
-            title: const Text('Enable time-based dark mode'),
-            subtitle: const Text('Dark mode between 19:00 and 06:00'),
+            title: Text(l10n.enableTimeBasedDarkMode),
+            subtitle: Text(l10n.darkModeTimeBased),
             value: themeService.autoDarkTime,
             onChanged: (bool value) {
               themeService.setAutoDarkTime(value);
@@ -62,7 +64,7 @@ class ThemeSettingsDialog extends StatelessWidget {
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(),
-          child: const Text('Close'),
+          child: Text(l10n.close),
         ),
       ],
     );

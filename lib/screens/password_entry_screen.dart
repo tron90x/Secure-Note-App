@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../services/auth_service.dart';
 import '../services/database_helper.dart';
+import '../l10n/app_localizations.dart';
 import 'main_notes_screen.dart';
 import 'create_password_screen.dart';
 import 'dart:io';
@@ -55,24 +56,25 @@ class _PasswordEntryScreenState extends State<PasswordEntryScreen> {
   }
 
   Future<void> _showResetConfirmation() async {
+    final l10n = AppLocalizations.of(context)!;
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Reset Database'),
-        content: const Text(
-          'Are you sure you want to reset the database? This will delete all your notes and cannot be undone.',
+        title: Text(l10n.resetDatabase),
+        content: Text(
+          l10n.resetDatabaseConfirmation,
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
+            child: Text(l10n.cancel),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
             style: TextButton.styleFrom(
               foregroundColor: Theme.of(context).colorScheme.error,
             ),
-            child: const Text('Reset'),
+            child: Text(l10n.reset),
           ),
         ],
       ),
@@ -117,8 +119,9 @@ class _PasswordEntryScreenState extends State<PasswordEntryScreen> {
         }
       } catch (e) {
         if (mounted) {
+          final l10n = AppLocalizations.of(context)!;
           setState(() {
-            _error = 'Failed to reset database: $e';
+            _error = l10n.failedToResetDatabase(e.toString());
             _isLoading = false;
           });
         }
@@ -128,11 +131,12 @@ class _PasswordEntryScreenState extends State<PasswordEntryScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.customDbPath != null
-            ? 'Unlock Custom Database'
-            : 'Unlock Native Storage'),
+            ? l10n.unlockCustomDatabase
+            : l10n.unlockNativeStorage),
       ),
       body: Center(
         child: Padding(
@@ -142,13 +146,13 @@ class _PasswordEntryScreenState extends State<PasswordEntryScreen> {
             children: [
               Text(
                 widget.customDbPath != null
-                    ? 'Enter password for custom database:'
-                    : 'Enter password for native storage:',
+                    ? l10n.enterPasswordCustomDb
+                    : l10n.enterPasswordNativeStorage,
               ),
               TextField(
                 controller: _passwordController,
                 obscureText: true,
-                decoration: const InputDecoration(labelText: 'Password'),
+                decoration: InputDecoration(labelText: l10n.password),
               ),
               if (_error != null)
                 Text(_error!, style: const TextStyle(color: Colors.red)),
@@ -159,7 +163,7 @@ class _PasswordEntryScreenState extends State<PasswordEntryScreen> {
                       children: [
                         ElevatedButton(
                           onPressed: _unlockApp,
-                          child: const Text('Unlock'),
+                          child: Text(l10n.unlock),
                         ),
                         if (widget.customDbPath == null) ...[
                           const SizedBox(height: 12),
@@ -170,7 +174,7 @@ class _PasswordEntryScreenState extends State<PasswordEntryScreen> {
                               foregroundColor:
                                   Theme.of(context).colorScheme.error,
                             ),
-                            child: const Text('Reset Database'),
+                            child: Text(l10n.resetDatabase),
                           ),
                         ],
                       ],

@@ -106,6 +106,7 @@ class _NoteDetailScreenState extends State<NoteDetailScreen>
   }
 
   Future<void> _showDecryptionDialog() async {
+    final l10n = AppLocalizations.of(context)!;
     final passwordController = TextEditingController();
     final formKey = GlobalKey<FormState>();
     int failedAttempts = 0;
@@ -117,7 +118,7 @@ class _NoteDetailScreenState extends State<NoteDetailScreen>
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
             content: Text(
-                'Too many failed attempts. Please wait ${remainingTime.inMinutes} minutes.')),
+                l10n.tooManyFailedAttempts(remainingTime.inMinutes))),
       );
       return;
     }
@@ -126,7 +127,7 @@ class _NoteDetailScreenState extends State<NoteDetailScreen>
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Decrypt Note'),
+          title: Text(l10n.decryptNote),
           content: Form(
             key: formKey,
             child: Column(
@@ -135,20 +136,20 @@ class _NoteDetailScreenState extends State<NoteDetailScreen>
                 TextFormField(
                   controller: passwordController,
                   decoration: InputDecoration(
-                    labelText: 'Enter Password to Decrypt',
-                    errorText: failedAttempts > 0 ? 'Invalid password' : null,
+                    labelText: l10n.enterPasswordToDecrypt,
+                    errorText: failedAttempts > 0 ? l10n.invalidPassword : null,
                   ),
                   obscureText: true,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Please enter the password';
+                      return l10n.pleaseEnterThePassword;
                     }
                     return null;
                   },
                 ),
                 if (failedAttempts > 0)
                   Text(
-                    'Failed attempts: $failedAttempts/$maxAttempts',
+                    l10n.failedAttempts(failedAttempts, maxAttempts),
                     style: const TextStyle(color: Colors.red),
                   ),
               ],
@@ -156,14 +157,14 @@ class _NoteDetailScreenState extends State<NoteDetailScreen>
           ),
           actions: <Widget>[
             TextButton(
-              child: const Text('Cancel'),
+              child: Text(l10n.cancel),
               onPressed: () {
                 Navigator.of(context).pop(false);
                 Navigator.of(context).pop();
               },
             ),
             TextButton(
-              child: const Text('Decrypt'),
+              child: Text(l10n.decrypt),
               onPressed: () {
                 if (formKey.currentState!.validate()) {
                   Navigator.of(context).pop(true);
@@ -204,8 +205,9 @@ class _NoteDetailScreenState extends State<NoteDetailScreen>
         );
 
         if (mounted) {
+          final l10n = AppLocalizations.of(context)!;
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Note decrypted successfully!')),
+            SnackBar(content: Text(l10n.noteDecryptedSuccessfully)),
           );
         }
         failedAttempts = 0; // Reset on success
@@ -216,8 +218,9 @@ class _NoteDetailScreenState extends State<NoteDetailScreen>
           _lockoutUntil = DateTime.now().add(lockoutDuration);
         }
         if (mounted) {
+          final l10n = AppLocalizations.of(context)!;
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Error: ${e.toString()}')),
+            SnackBar(content: Text(l10n.decryptionError(e.toString()))),
           );
           // If decryption fails, return to the previous screen
           Navigator.of(context).pop();
@@ -231,6 +234,7 @@ class _NoteDetailScreenState extends State<NoteDetailScreen>
   }
 
   Future<void> _showEncryptionDialog() async {
+    final l10n = AppLocalizations.of(context)!;
     final passwordController = TextEditingController();
     final confirmPasswordController = TextEditingController();
     final formKey = GlobalKey<FormState>();
@@ -239,7 +243,7 @@ class _NoteDetailScreenState extends State<NoteDetailScreen>
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Encrypt Note'),
+          title: Text(l10n.encryptNote),
           content: Form(
             key: formKey,
             child: Column(
@@ -247,11 +251,11 @@ class _NoteDetailScreenState extends State<NoteDetailScreen>
               children: [
                 TextFormField(
                   controller: passwordController,
-                  decoration: const InputDecoration(labelText: 'Password'),
+                  decoration: InputDecoration(labelText: l10n.passwordLabel),
                   obscureText: true,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Please enter a password';
+                      return l10n.pleaseEnterPassword;
                     }
                     return null;
                   },
@@ -260,11 +264,11 @@ class _NoteDetailScreenState extends State<NoteDetailScreen>
                 TextFormField(
                   controller: confirmPasswordController,
                   decoration:
-                      const InputDecoration(labelText: 'Confirm Password'),
+                      InputDecoration(labelText: l10n.confirmPasswordLabel),
                   obscureText: true,
                   validator: (value) {
                     if (value != passwordController.text) {
-                      return 'Passwords do not match';
+                      return l10n.passwordsDoNotMatch;
                     }
                     return null;
                   },
@@ -274,11 +278,11 @@ class _NoteDetailScreenState extends State<NoteDetailScreen>
           ),
           actions: <Widget>[
             TextButton(
-              child: const Text('Cancel'),
+              child: Text(l10n.cancel),
               onPressed: () => Navigator.of(context).pop(false),
             ),
             TextButton(
-              child: const Text('Encrypt'),
+              child: Text(l10n.encrypt),
               onPressed: () {
                 if (formKey.currentState!.validate()) {
                   Navigator.of(context).pop(true);
@@ -317,14 +321,16 @@ class _NoteDetailScreenState extends State<NoteDetailScreen>
         );
         setState(() => _isEncrypted = true);
         if (mounted) {
+          final l10n = AppLocalizations.of(context)!;
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Note encrypted successfully!')),
+            SnackBar(content: Text(l10n.noteEncryptedSuccessfully)),
           );
         }
       } catch (e) {
         if (mounted) {
+          final l10n = AppLocalizations.of(context)!;
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Error: ${e.toString()}')),
+            SnackBar(content: Text(l10n.encryptionError(e.toString()))),
           );
         }
       } finally {
@@ -337,6 +343,7 @@ class _NoteDetailScreenState extends State<NoteDetailScreen>
 
   Future<void> _pickColor(BuildContext context,
       {required bool forBackground}) async {
+    final l10n = AppLocalizations.of(context)!;
     Color pickerColor = forBackground ? _backgroundColor : _titleColor;
     Color newColorHolder = pickerColor;
 
@@ -344,7 +351,7 @@ class _NoteDetailScreenState extends State<NoteDetailScreen>
       context: context,
       builder: (context) => AlertDialog(
         title: Text(
-            forBackground ? 'Pick Note Background Color' : 'Pick Title Color'),
+            forBackground ? l10n.pickNoteBackgroundColor : l10n.pickTitleColor),
         content: SingleChildScrollView(
           child: picker.ColorPicker(
             pickerColor: pickerColor,
@@ -360,11 +367,11 @@ class _NoteDetailScreenState extends State<NoteDetailScreen>
         ),
         actions: <Widget>[
           TextButton(
-            child: const Text('Cancel'),
+            child: Text(l10n.cancel),
             onPressed: () => Navigator.of(context).pop(),
           ),
           ElevatedButton(
-            child: const Text('Select'),
+            child: Text(l10n.select),
             onPressed: () {
               setState(() {
                 if (forBackground) {
@@ -438,10 +445,11 @@ class _NoteDetailScreenState extends State<NoteDetailScreen>
   }
 
   Future<void> _saveNote() async {
+    final l10n = AppLocalizations.of(context)!;
     _updateLastActivity();
     if (_contentController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Note content cannot be empty.')));
+          SnackBar(content: Text(l10n.noteContentCannotBeEmpty)));
       return;
     }
 
@@ -461,13 +469,13 @@ class _NoteDetailScreenState extends State<NoteDetailScreen>
       if (mounted) {
         setState(() => _isEditing = false);
         ScaffoldMessenger.of(context)
-            .showSnackBar(const SnackBar(content: Text('Note updated!')));
+            .showSnackBar(SnackBar(content: Text(l10n.noteUpdated)));
         Navigator.pop(context, true);
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text('Error saving note: $e')));
+            .showSnackBar(SnackBar(content: Text(l10n.errorSavingNote(e.toString()))));
       }
     } finally {
       if (mounted) {
@@ -477,19 +485,20 @@ class _NoteDetailScreenState extends State<NoteDetailScreen>
   }
 
   Future<void> _deleteNote() async {
+    final l10n = AppLocalizations.of(context)!;
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Delete Note'),
-        content: const Text(
-            'Are you sure you want to delete this note? This action cannot be undone.'),
+        title: Text(l10n.deleteNote),
+        content: Text(
+            l10n.deleteNoteConfirmation),
         actions: [
           TextButton(
               onPressed: () => Navigator.pop(context, false),
-              child: const Text('Cancel')),
+              child: Text(l10n.cancel)),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('Delete', style: TextStyle(color: Colors.red)),
+            child: Text(l10n.delete, style: const TextStyle(color: Colors.red)),
           ),
         ],
       ),
@@ -505,7 +514,7 @@ class _NoteDetailScreenState extends State<NoteDetailScreen>
       } catch (e) {
         if (mounted) {
           ScaffoldMessenger.of(context)
-              .showSnackBar(SnackBar(content: Text('Error deleting note: $e')));
+              .showSnackBar(SnackBar(content: Text(l10n.errorDeletingNote(e.toString()))));
         }
       } finally {
         if (mounted) {
@@ -527,9 +536,10 @@ class _NoteDetailScreenState extends State<NoteDetailScreen>
       }
     } catch (e) {
       if (mounted) {
+        final l10n = AppLocalizations.of(context)!;
         setState(() => _isLoadingImages = false);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error loading images: $e')),
+          SnackBar(content: Text(l10n.errorLoadingImages(e.toString()))),
         );
       }
     }
@@ -540,20 +550,23 @@ class _NoteDetailScreenState extends State<NoteDetailScreen>
       await _dbHelper.deleteImageAttachment(imageId);
       await _loadImageAttachments();
       if (mounted) {
+        final l10n = AppLocalizations.of(context)!;
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Image deleted successfully')),
+          SnackBar(content: Text(l10n.imageDeletedSuccessfully)),
         );
       }
     } catch (e) {
       if (mounted) {
+        final l10n = AppLocalizations.of(context)!;
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error deleting image: $e')),
+          SnackBar(content: Text(l10n.errorDeletingImage(e.toString()))),
         );
       }
     }
   }
 
   void _showImageDialog(Uint8List imageData) {
+    final l10n = AppLocalizations.of(context)!;
     showDialog(
       context: context,
       builder: (context) => Dialog(
@@ -568,7 +581,7 @@ class _NoteDetailScreenState extends State<NoteDetailScreen>
               children: [
                 TextButton(
                   onPressed: () => Navigator.pop(context),
-                  child: const Text('Close'),
+                  child: Text(l10n.close),
                 ),
               ],
             ),
@@ -589,14 +602,16 @@ class _NoteDetailScreenState extends State<NoteDetailScreen>
       await file.writeAsBytes(imageData);
 
       if (mounted) {
+        final l10n = AppLocalizations.of(context)!;
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Image saved to: $targetPath')),
+          SnackBar(content: Text(l10n.imageSavedTo(targetPath))),
         );
       }
     } catch (e) {
       if (mounted) {
+        final l10n = AppLocalizations.of(context)!;
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error downloading image: $e')),
+          SnackBar(content: Text(l10n.errorDownloadingImage(e.toString()))),
         );
       }
     }
@@ -611,14 +626,15 @@ class _NoteDetailScreenState extends State<NoteDetailScreen>
       return const SizedBox.shrink();
     }
 
+    final l10n = AppLocalizations.of(context)!;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Padding(
-          padding: EdgeInsets.all(8.0),
+        Padding(
+          padding: const EdgeInsets.all(8.0),
           child: Text(
-            'Attached Images',
-            style: TextStyle(
+            l10n.attachedImages,
+            style: const TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
             ),
@@ -706,14 +722,16 @@ class _NoteDetailScreenState extends State<NoteDetailScreen>
       _newlyPickedImages.clear();
       await _loadImageAttachments();
       if (mounted) {
+        final l10n = AppLocalizations.of(context)!;
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Image(s) attached successfully!')),
+          SnackBar(content: Text(l10n.imagesAttachedSuccessfully)),
         );
       }
     } catch (e) {
       if (mounted) {
+        final l10n = AppLocalizations.of(context)!;
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error attaching image(s): $e')),
+          SnackBar(content: Text(l10n.errorAttachingImages(e.toString()))),
         );
       }
     } finally {
@@ -723,6 +741,7 @@ class _NoteDetailScreenState extends State<NoteDetailScreen>
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final isDarkBackground = _backgroundColor.computeLuminance() < 0.5;
     final contentTextColor = isDarkBackground ? Colors.white : Colors.black87;
 
@@ -752,7 +771,7 @@ class _NoteDetailScreenState extends State<NoteDetailScreen>
             ),
             onPressed:
                 _isEncrypted ? _showDecryptionDialog : _showEncryptionDialog,
-            tooltip: _isEncrypted ? 'Decrypt Note' : 'Encrypt Note',
+            tooltip: _isEncrypted ? l10n.decryptNote : l10n.encryptNote,
           ),
           IconButton(
             icon: Icon(Icons.delete,
@@ -778,7 +797,7 @@ class _NoteDetailScreenState extends State<NoteDetailScreen>
                             fontSize: 22,
                           ),
                           decoration: InputDecoration(
-                            labelText: 'Title',
+                            labelText: l10n.titleLabel,
                             labelStyle:
                                 TextStyle(color: _titleColor.withOpacity(0.7)),
                             border: const OutlineInputBorder(),
@@ -792,7 +811,7 @@ class _NoteDetailScreenState extends State<NoteDetailScreen>
                       : Text(
                           _titleController.text.isNotEmpty
                               ? _titleController.text
-                              : 'Untitled',
+                              : l10n.untitled,
                           style: TextStyle(
                             color: _titleColor,
                             fontWeight: FontWeight.bold,
@@ -807,13 +826,13 @@ class _NoteDetailScreenState extends State<NoteDetailScreen>
                         icon: const Icon(Icons.color_lens),
                         onPressed: () =>
                             _pickColor(context, forBackground: true),
-                        tooltip: 'Change Background Color',
+                        tooltip: l10n.changeBackgroundColor,
                       ),
                       IconButton(
                         icon: const Icon(Icons.format_color_text),
                         onPressed: () =>
                             _pickColor(context, forBackground: false),
-                        tooltip: 'Change Text Color',
+                        tooltip: l10n.changeTextColor,
                       ),
                     ],
                   ),
@@ -841,7 +860,7 @@ class _NoteDetailScreenState extends State<NoteDetailScreen>
                               color: contentTextColor,
                             ),
                             decoration: InputDecoration(
-                              hintText: 'Enter your note here...',
+                              hintText: l10n.enterYourNoteHere,
                               hintStyle: TextStyle(
                                 color: contentTextColor.withOpacity(0.6),
                               ),
@@ -877,12 +896,12 @@ class _NoteDetailScreenState extends State<NoteDetailScreen>
                                 _parseColor(widget.note['noteTitleColor']);
                           });
                         },
-                        child: const Text('Cancel Edit'),
+                        child: Text(l10n.cancelEdit),
                       ),
                       const SizedBox(width: 8),
                       ElevatedButton.icon(
                         icon: const Icon(Icons.save),
-                        label: const Text('Save Changes'),
+                        label: Text(l10n.saveChanges),
                         onPressed: _saveNote,
                       ),
                     ],
